@@ -1,0 +1,45 @@
+# about yaml or yml:
+#  https://en.wikipedia.org/wiki/YAML#:~:text=The%20official%20recommended%20filename%20extension%20for%20YAML%20files%20has%20been%20.yaml%20since%202006
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always    #Show message in ResponseStatusException
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:reports}
+
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres?search_path=reports
+    username: postgres
+    password: postgres
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        generate_statistics: true
+        default_schema: reports
+  flyway:
+    default-schema: reports
+
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+
+
+#Custom
+custom:
+  defaultSort: ${DEFAULT_SORT:id,asc}
+  defaultSize: ${DEFAULT_PAGE_SIZE:10}
+
