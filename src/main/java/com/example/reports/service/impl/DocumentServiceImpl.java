@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -147,6 +149,22 @@ public class DocumentServiceImpl implements DocumentService {
         responseEntity.put("pages", documentPage.getTotalPages());
         responseEntity.put("entity", documentPage.stream().toList());
         return responseEntity;
+    }
+
+    @Override
+    public List<Map<String, Object>> report() {
+        List<Map<String, Object>> result = new ArrayList<>();
+        List<Document> documents = documentRepo.findAll();
+        documents.forEach(document -> {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", document.getId());
+            item.put("amount", document.getAmount());
+            item.put("name", document.getName());
+            item.put("number", document.getNumber());
+            item.put("status", document.getStatus());
+            result.add(item);
+        });
+        return result;
     }
 
     private Document updateAllFields(Document documentFromDB, Document updatedDocument) {

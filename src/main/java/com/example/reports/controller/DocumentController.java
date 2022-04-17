@@ -4,8 +4,16 @@ package com.example.reports.controller;
 import com.example.reports.entity.Document;
 import com.example.reports.service.impl.DocumentServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import jdk.jfr.ContentType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanArrayDataSource;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.util.JRSaver;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +22,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -95,5 +107,34 @@ public class DocumentController {
         }
         documentService.deleteDocumentByName(name);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/pdf")
+    public void report(HttpServletResponse response) throws JRException, IOException {
+        response.setContentType("application/x-download");
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(documentService.report());
+        InputStream reportStream = getClass().getResourceAsStream("/report1.jrxml");
+
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
+        JRSaver.saveObject(jasperReport, "employeeReport.jasper");
+
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
+        OutputStream outputStream =response.getOutputStream();
+        JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+        response.setContentType("application/pdf");
+        response.addHeader("Content-Disposition", "inline; filename=jasper.pdf;");
+
+
+
+
+//        response.setContentType("text/html");
+//        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(documentService.report());
+//        InputStream inputStream = this.getClass().getResourceAsStream("report1.jrxml");
+//        JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+//        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
+//        HtmlExporter exporter = new HtmlExporter(DefaultJasperReportsContext.getInstance());
+//        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+//        exporter.setExporterOutput(new SimpleHtmlExporterOutput(response.getWriter()));
+//        exporter.exportReport();
     }
 }
