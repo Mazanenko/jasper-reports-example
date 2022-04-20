@@ -15,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -48,14 +46,14 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Document getDocumentByName(String name) throws Exception {
+    public Document getDocumentByName(String name) throws IllegalArgumentException, EntityNotFoundException {
         if (name == null || name.isEmpty()) {
             log.warn("Given document's name is null or empty");
             throw new IllegalArgumentException("Given document's name is null or empty");
         }
         return documentRepo.findByName(name).orElseThrow(() -> {
             log.warn("Can't found document with name ({})", name);
-            return new Exception("Can't found document");
+            throw new EntityNotFoundException ("Can't found document");
         });
     }
 
@@ -151,26 +149,10 @@ public class DocumentServiceImpl implements DocumentService {
         return responseEntity;
     }
 
-    @Override
-    public List<Map<String, Object>> report() {
-        List<Map<String, Object>> result = new ArrayList<>();
-        List<Document> documents = documentRepo.findAll();
-        documents.forEach(document -> {
-            Map<String, Object> item = new HashMap<>();
-            item.put("id", document.getId());
-            item.put("amount", document.getAmount());
-            item.put("name", document.getName());
-            item.put("number", document.getNumber());
-            item.put("status", document.getStatus());
-            result.add(item);
-        });
-        return result;
-    }
 
     private Document updateAllFields(Document documentFromDB, Document updatedDocument) {
-        documentFromDB.setAmount(updatedDocument.getAmount());
         documentFromDB.setName(documentFromDB.getName());
-        documentFromDB.setNumber(documentFromDB.getNumber());
+        documentFromDB.setType(documentFromDB.getType());
         documentFromDB.setContent(updatedDocument.getContent());
         documentFromDB.setStatus(updatedDocument.getStatus());
         documentFromDB.setCustomer(documentFromDB.getCustomer());

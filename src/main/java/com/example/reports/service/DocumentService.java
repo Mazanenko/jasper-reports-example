@@ -2,8 +2,6 @@ package com.example.reports.service;
 
 import com.example.reports.entity.Document;
 
-import javax.print.Doc;
-import java.util.List;
 import java.util.Map;
 
 public interface DocumentService {
@@ -19,6 +17,4 @@ public interface DocumentService {
     void deleteDocumentByName(String name);
 
     Map<String, Object> findAll(String filter, Integer page, Integer size, String sort);
-
-    List<Map<String, Object>> report();
 }

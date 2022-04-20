@@ -31,8 +31,8 @@ spring:
         default_schema: reports
   flyway:
     default-schema: reports
-  mvc:
-    static-path-pattern: /resources/**
+#  mvc:
+#    static-path-pattern: /resources/**
 
 
 logging:
@@ -44,4 +44,5 @@ logging:
 custom:
   defaultSort: ${DEFAULT_SORT:id,asc}
   defaultSize: ${DEFAULT_PAGE_SIZE:10}
+  defaultFormat: ${DEFAULT_REPORT_FORMAT:pdf}
 
