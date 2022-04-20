@@ -11,6 +11,7 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,6 @@ public class ReportServiceImpl implements ReportService {
 
     @Value("${custom.defaultFormat}")
     private String defaultFormat;
-
     private final DocumentRepo documentRepo;
     private final JasperUtil jasperUtil;
 
@@ -61,44 +61,67 @@ public class ReportServiceImpl implements ReportService {
                     response.addHeader("Content-Disposition", "inline; filename=jasper.pdf;");
                     JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
                 }
-                case "html" -> {
-                    response.setContentType("application/html");
-                    response.addHeader("Content-Disposition", "inline; filename=jasper.html;");
-
-                    HtmlExporter exporter = new HtmlExporter();
-                    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-                    exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
-                    exporter.exportReport();
-                }
-                case "csv" -> {
-                    response.setContentType("application/csv");
-                    JRCsvExporter exporter = new JRCsvExporter();
-                    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-                    exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
-                    exporter.exportReport();
-                }
-                case "xlsx" -> {
-                    response.setContentType("application/xlsx");
-                    response.addHeader("Content-Disposition", "inline; filename=" + documentName + ".xlsx;");
-
-                    JRXlsxExporter exporter = new JRXlsxExporter();
-                    SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
-                    reportConfig.setSheetNames(new String[]{"Data"});
-
-                    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-                    exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-                    exporter.setConfiguration(reportConfig);
-                    exporter.exportReport();
-                }
+                case "html" -> htmlCase(response, jasperPrint, outputStream, documentName);
+                case "csv" -> csvCase(response, jasperPrint, outputStream, documentName);
+                case "xlsx" -> xlsxCase(response, jasperPrint, outputStream, documentName);
                 case "xml" -> {
                     response.setContentType("application/xml");
                     response.addHeader("Content-Disposition", "inline; filename=" + documentName + ".xml;");
                     JasperExportManager.exportReportToXmlStream(jasperPrint, outputStream);
                 }
+                case "docx" -> docxCase(response, jasperPrint, outputStream, documentName);
                 default -> log.warn("Given wrong format ({})", format);
             }
         } catch (IOException | JRException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+
+    private void htmlCase(HttpServletResponse response, JasperPrint jasperPrint,
+                         OutputStream outputStream, String documentName) throws JRException {
+        response.setContentType("application/html");
+        response.addHeader("Content-Disposition", "inline; filename=" + documentName + ".html;");
+
+        HtmlExporter exporter = new HtmlExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
+        exporter.exportReport();
+    }
+
+    private void csvCase(HttpServletResponse response, JasperPrint jasperPrint,
+                          OutputStream outputStream, String documentName) throws JRException {
+        response.setContentType("application/csv");
+        response.addHeader("Content-Disposition", "inline; filename=" + documentName + ".csv;");
+        JRCsvExporter exporter = new JRCsvExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+        exporter.exportReport();
+    }
+
+    private void xlsxCase(HttpServletResponse response, JasperPrint jasperPrint,
+                          OutputStream outputStream, String documentName) throws JRException {
+        response.setContentType("application/xlsx");
+        response.addHeader("Content-Disposition", "inline; filename=" + documentName + ".xlsx;");
+
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
+        reportConfig.setSheetNames(new String[]{"Data"});
+
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+        exporter.setConfiguration(reportConfig);
+        exporter.exportReport();
+    }
+
+    private void docxCase(HttpServletResponse response, JasperPrint jasperPrint,
+                          OutputStream outputStream, String documentName) throws JRException {
+        response.setContentType("application/docx");
+        response.addHeader("Content-Disposition", "inline; filename=" + documentName + ".docx;");
+        JRDocxExporter exporter = new JRDocxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+        exporter.exportReport();
     }
 }
