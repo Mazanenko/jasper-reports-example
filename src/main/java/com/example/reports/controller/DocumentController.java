@@ -94,7 +94,7 @@ public class DocumentController {
     @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> deleteDocByName(@PathVariable("name") String name) {
         if (name == null || name.isBlank()) {
-            return new ResponseEntity<>("bad name", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("name is null or empty", HttpStatus.BAD_REQUEST);
         }
         documentService.deleteDocumentByName(name);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

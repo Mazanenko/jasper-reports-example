@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.19.0.final using JasperReports Library version 6.19.0-646c68931cebf1a58bc65c4359d1f0ca223c5e94  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="133c6463-f1c5-4fb1-8ec4-966555654535">
-<!--	<property name="com.jaspersoft.studio.data.sql.tables">-->
-<!--		<![CDATA[cmVwb3J0cy5kb2N1bWVudCAsMTUsMTUsZjdkZjBhMDYtM2FjNi00OGVlLWJhNzAtYThjNThhNzcy-->
-<!--ZDNmOw==]]>-->
-<!--	</property>-->
-<!--	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="PSQL adapter"/>-->
-<!--	<queryString language="SQL">-->
-<!--		<![CDATA[SELECT id,-->
-<!--	name,-->
-<!--	content,-->
-<!--	status,-->
-<!--	customer,-->
-<!--	supplier,-->
-<!--	created,-->
-<!--	modified-->
-<!--FROM reports.document]]>-->
-<!--	</queryString>-->
+
 	<field name="id" class="java.lang.Long">
 		<property name="com.jaspersoft.studio.field.name" value="id"/>
 		<property name="com.jaspersoft.studio.field.label" value="id"/>
